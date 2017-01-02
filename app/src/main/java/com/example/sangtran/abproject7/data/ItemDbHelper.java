@@ -3,10 +3,8 @@ package com.example.sangtran.abproject7.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.sangtran.abproject7.data.ItemContract.ItemEntry;
-import static android.R.attr.version;
 
 /**
  * Created by Sang Tran on 2016-12-23.
@@ -19,11 +17,12 @@ public class ItemDbHelper extends SQLiteOpenHelper {
                     " (" +
                     ItemEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     ItemEntry.COLUMN_ITEM_NAME + " TEXT NOT NULL," +
-                    ItemEntry.COLUMN_ITEM_QUANTITY + " INTEGER NOT NULL DEFAULT 0," +
                     ItemEntry.COLUMN_ITEM_PRICE + " INTEGER NOT NULL DEFAULT 0," +
-                    ItemEntry.COLUMN_ITEM_PICTURE + " BLOB NOT NULL," +
+                    ItemEntry.COLUMN_ITEM_QUANTITY + " INTEGER NOT NULL DEFAULT 0," +
+                    ItemEntry.COLUMN_ITEM_SOLD + " INTEGER NOT NULL DEFAULT 0," +
+                    ItemEntry.COLUMN_ITEM_PICTURE + " TEXT NOT NULL," +
                     ItemEntry.COLUMN_ITEM_SUPPLIER + " TEXT NOT NULL," +
-                    ItemEntry.COLUMN_ITEM_ORDERED + " INTEGER DEFAULT 0" +
+                    ItemEntry.COLUMN_ITEM_SUPPLIER_EMAIL + " TEXT NOT NULL" +
                     ");";
 
     // If you change the database schema, you must increment the database version.

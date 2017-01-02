@@ -31,7 +31,7 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif-medium"
             android:paddingTop="16dp"
-            android:text="There's no paintings..."
+            android:text="@string/main_empty_label_no_paintings"
             android:textAppearance="?android:textAppearanceMedium"/>
 
         <TextView
@@ -42,7 +42,7 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif"
             android:paddingTop="8dp"
-            android:text="Why not add some?"
+            android:text="@string/main_empty_label_add_some"
             android:textAppearance="?android:textAppearanceSmall"
             android:textColor="#A2AAB0"/>
     </RelativeLayout>

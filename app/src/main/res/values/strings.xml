@@ -1,4 +1,54 @@
 <resources>
     <string name="app_name">ABProject7</string>
     <string name="title_activity_detail">DetailActivity</string>
+
+    <!-- Toast message in editor when current pet was successfully deleted [CHAR LIMIT=NONE] -->
+    <string name="editor_delete_item_successful">Item deleted</string>
+
+    <!-- Toast message in editor when current pet has failed to be deleted [CHAR LIMIT=NONE] -->
+    <string name="editor_delete_item_failed">Error with deleting item</string>
+
+    <!-- Dialog message to ask the user to confirm deleting the current pet [CHAR LIMIT=NONE] -->
+    <string name="delete_dialog_msg">Delete this item?</string>
+
+    <!-- Dialog button text for the option to confirm deleting the current pet [CHAR LIMIT=20] -->
+    <string name="delete">Delete</string>
+
+    <!-- Dialog button text for the option to cancel deletion of the current pet [CHAR LIMIT=20] -->
+    <string name="cancel">Cancel</string>
+
+    <!-- Label for textView item name if unknown -->
+    <string name="unknown_painting_name">Unknown Name</string>
+    <!-- Label detail activity overview -->
+    <string name="detail_label_overview">Overview</string>
+    <!-- Label detail activity price -->
+    <string name="detail_label_price">Price</string>
+    <!-- Label detail activity quantity -->
+    <string name="detail_label_quantity">Quantity</string>
+    <!-- Label detail activity amount sold -->
+    <string name="detail_label_sold">Amount Sold</string>
+    <!-- Label detail activty picture -->
+    <string name="detail_label_picture">Picture</string>
+    <!-- Button detail activity add image -->
+    <string name="detail_button_add_image">Add Image</string>
+    <!-- Label detail activity supplier -->
+    <string name="detail_label_supplier">Supplier</string>
+    <!-- Label detail activity supplier name -->
+    <string name="detail_hint_supplier">Supplier Name</string>
+    <!-- Button detail activity order more supplies -->
+    <string name="detail_button_ordersupplies">Order Supplies</string>
+    <!-- Label main activity no paintings -->
+    <string name="main_empty_label_no_paintings">There\'s no paintings...</string>
+    <!-- Label main activity add some paintings -->
+    <string name="main_empty_label_add_some">Why not add some?</string>
+    <!-- Button list item add to sale -->
+    <string name="list_item_button_add_to_sale">ADD TO SALE</string>
+    <!-- Label list item price -->
+    <string name="list_item_label_price">Price:</string>
+    <!-- Label list item quality -->
+    <string name="list_item_label_quality">Quantity:</string>
+    <!-- Label list item sold -->
+    <string name="list_item_label_sold">Sold:</string>
+
+    <string name="detail_hint_supplier_email">Supplier Email</string>
 </resources>

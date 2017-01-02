@@ -30,20 +30,11 @@ public class ItemContract {
         public static final String _ID = BaseColumns._ID;
         public static final String COLUMN_ITEM_NAME = "name";
         public static final String COLUMN_ITEM_QUANTITY = "quantity";
+        public static final String COLUMN_ITEM_SOLD = "sold";
         public static final String COLUMN_ITEM_PRICE = "price";
         public static final String COLUMN_ITEM_SUPPLIER = "supplier";
+        public static final String COLUMN_ITEM_SUPPLIER_EMAIL = "email";
         public static final String COLUMN_ITEM_PICTURE = "picture";
-        public static final String COLUMN_ITEM_ORDERED = "ordered";
 
-
-        public static final int SUPPLIER_NOT_ORDERED = 0;
-        public static final int SUPPLIER_ORDERED = 1;
-
-        public static boolean hasOrderedFromSupplier(int status) {
-            if (status == SUPPLIER_ORDERED || status == SUPPLIER_NOT_ORDERED) {
-                return true;
-            }
-            return false;
-        }
     }
 }

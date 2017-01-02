@@ -7,10 +7,8 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.annotation.Nullable;
-import com.example.sangtran.abproject7.data.ItemContract.ItemEntry;
 
-import static android.R.attr.name;
+import com.example.sangtran.abproject7.data.ItemContract.ItemEntry;
 
 /**
  * Created by Sang Tran on 2016-12-25.
@@ -194,7 +192,6 @@ public class ItemProvider extends ContentProvider {
 
     //SanityCheck helper method catches null inputs
     public void sanityCheck(ContentValues values) {
-
         // check that the name value is not null.
         if (values.containsKey(ItemEntry.COLUMN_ITEM_NAME)) {
             String name = values.getAsString(ItemEntry.COLUMN_ITEM_NAME);
@@ -223,7 +220,7 @@ public class ItemProvider extends ContentProvider {
 
         // check that the image value is not null.
         if (values.containsKey(ItemEntry.COLUMN_ITEM_PICTURE)) {
-            byte[] image = values.getAsByteArray(ItemEntry.COLUMN_ITEM_PICTURE);
+            String image = values.getAsString(ItemEntry.COLUMN_ITEM_PICTURE);
             if (image == null) {
                 throw new IllegalArgumentException("Item requires a picture");
             }
@@ -237,11 +234,11 @@ public class ItemProvider extends ContentProvider {
             }
         }
 
-        //check orderstatus is not null and > 0
-        if (values.containsKey(ItemEntry.COLUMN_ITEM_ORDERED)) {
-            Integer orderStatus = values.getAsInteger(ItemEntry.COLUMN_ITEM_ORDERED);
-            if (orderStatus == null || !ItemEntry.hasOrderedFromSupplier(orderStatus)) {
-                throw new IllegalArgumentException("Item requires a valid order status");
+        //check number is not null
+        if (values.containsKey(ItemEntry.COLUMN_ITEM_SUPPLIER_EMAIL)) {
+            String email = values.getAsString(ItemEntry.COLUMN_ITEM_SUPPLIER);
+            if (email == null) {
+                throw new IllegalArgumentException("Item requires a supplier email");
             }
         }
     }
