@@ -55,20 +55,18 @@ public class ItemCursorAdapter extends CursorAdapter {
         String strName = cursor.getString(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME));
         double price = cursor.getDouble(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE));
         String imageUri = cursor.getString(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PICTURE));
-        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+
 
         final int mQuantity = cursor.getInt(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY));
         final int mSold = cursor.getInt(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_SOLD));
 
-        // If item Name is empty string or null, then use some default text
-        // says "Unknown Name", so the TextView isn't blank.
-        if (TextUtils.isEmpty(strName)) {
-            strName = context.getString(R.string.unknown_painting_name);
-        }
+        //used to view price in currency format
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+
 
         // Update the TextViews with the attributes for the current pet
         itemName.setText(strName);
-        itemPrice.setText(formatter.format(price / 100));
+        itemPrice.setText(formatter.format(price));
         itemQuantity.setText(String.valueOf(mQuantity));
         itemSold.setText(String.valueOf(mSold));
         Uri uri = Uri.parse(imageUri);

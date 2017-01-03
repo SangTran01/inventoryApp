@@ -202,7 +202,6 @@ public class ItemProvider extends ContentProvider {
 
         // check that the price value is valid.
         if (values.containsKey(ItemEntry.COLUMN_ITEM_PRICE)) {
-            // Check that the weight is greater than or equal to 0 kg
             Double price = values.getAsDouble(ItemEntry.COLUMN_ITEM_PRICE);
             if (price != null && price < 0) {
                 throw new IllegalArgumentException("Item requires valid price");
@@ -211,7 +210,6 @@ public class ItemProvider extends ContentProvider {
 
         // check that the quantity value is valid.
         if (values.containsKey(ItemEntry.COLUMN_ITEM_QUANTITY)) {
-            // Check that the weight is greater than or equal to 0 kg
             Integer quantity = values.getAsInteger(ItemEntry.COLUMN_ITEM_QUANTITY);
             if (quantity != null && quantity < 0) {
                 throw new IllegalArgumentException("Item requires valid quantity");
@@ -234,9 +232,9 @@ public class ItemProvider extends ContentProvider {
             }
         }
 
-        //check number is not null
+        //check email is not null
         if (values.containsKey(ItemEntry.COLUMN_ITEM_SUPPLIER_EMAIL)) {
-            String email = values.getAsString(ItemEntry.COLUMN_ITEM_SUPPLIER);
+            String email = values.getAsString(ItemEntry.COLUMN_ITEM_SUPPLIER_EMAIL);
             if (email == null) {
                 throw new IllegalArgumentException("Item requires a supplier email");
             }

@@ -8,14 +8,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,19 +26,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sangtran.abproject7.data.ItemContract;
 import com.example.sangtran.abproject7.data.ItemContract.ItemEntry;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
+
+import static com.example.sangtran.abproject7.R.id.item_quantity;
+import static com.example.sangtran.abproject7.R.id.item_sold;
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private EditText mEditItemName;
     private EditText mEditItemPrice;
     private TextView mTextAmountSold;
     private EditText mEditItemQuantity;
-    private TextView mItemQuantity;
-    private TextView mItemSold;
+    private TextView mTextItemQuantity;
+    private TextView mTextItemSold;
     private EditText mEditItemSupplier;
     private EditText mEditSupplierEmail;
     private Button mBtnAddImage;
@@ -48,18 +50,19 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private Button mBtnItemAddSale;
     private Button mBtnItemReceiveShipment;
 
+
+    //global variables to send to email intent
+    private String mName;
+    private Double mPrice;
     private int mQuantity;
     private int mSold;
+    private String mSupplier;
     private String mSupplierEmail;
-
-    //current Text for edittext price
-    private String current;
+    //selected image URI coming from Intent MainActivity
+    private Uri mSelectedImageUri;
 
     //REQUEST CODE for image
     private final int PICK_IMAGE_REQUEST = 100;
-
-    //selected image URI coming from Intent MainActivity
-    private Uri mSelectedImageUri;
 
     //selected URI for item
     private Uri mSelectedUri;
@@ -95,8 +98,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mTextAmountSold = (TextView) findViewById(R.id.text_amount_sold);
         mEditItemQuantity = (EditText) findViewById(R.id.edit_item_quantity);
         mEditItemPrice = (EditText) findViewById(R.id.edit_item_price);
-        mItemQuantity = (TextView) findViewById(R.id.item_quantity);
-        mItemSold = (TextView) findViewById(R.id.item_sold);
+        mTextItemQuantity = (TextView) findViewById(item_quantity);
+        mTextItemSold = (TextView) findViewById(item_sold);
         mEditItemSupplier = (EditText) findViewById(R.id.edit_item_supplier);
         mEditSupplierEmail = (EditText) findViewById(R.id.edit_item_supplier_email);
         mItemImageView = (ImageView) findViewById(R.id.img_item_painting);
@@ -117,9 +120,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             //Hide sold label, and quantity and sold values
             //Hide buttons add sale and receive shipment
             mEditItemQuantity.setVisibility(View.VISIBLE);
-            mItemQuantity.setVisibility(View.GONE);
+            mTextItemQuantity.setVisibility(View.GONE);
             mTextAmountSold.setVisibility(View.GONE);
-            mItemSold.setVisibility(View.GONE);
+            mTextItemSold.setVisibility(View.GONE);
             mBtnItemAddSale.setVisibility(View.GONE);
             mBtnItemReceiveShipment.setVisibility(View.GONE);
             mBtnItemOrder.setVisibility(View.GONE);
@@ -129,9 +132,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
             //Hide edittext Quantity when updating
             mEditItemQuantity.setVisibility(View.GONE);
-            mItemQuantity.setVisibility(View.VISIBLE);
+            mTextItemQuantity.setVisibility(View.VISIBLE);
             mTextAmountSold.setVisibility(View.VISIBLE);
-            mItemSold.setVisibility(View.VISIBLE);
+            mTextItemSold.setVisibility(View.VISIBLE);
             mBtnItemAddSale.setVisibility(View.VISIBLE);
             mBtnItemReceiveShipment.setVisibility(View.VISIBLE);
             mBtnItemOrder.setVisibility(View.VISIBLE);
@@ -145,8 +148,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         // or not, if the user tries to leave the editor without saving.
         mEditItemPrice.setOnTouchListener(mTouchListener);
         mEditItemQuantity.setOnTouchListener(mTouchListener);
-        mItemQuantity.setOnTouchListener(mTouchListener);
-        mItemSold.setOnTouchListener(mTouchListener);
+        mTextItemQuantity.setOnTouchListener(mTouchListener);
+        mTextItemSold.setOnTouchListener(mTouchListener);
         mEditItemSupplier.setOnTouchListener(mTouchListener);
         mEditSupplierEmail.setOnTouchListener(mTouchListener);
         mBtnAddImage.setOnTouchListener(mTouchListener);
@@ -163,34 +166,25 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             }
         });
 
-        //button Item Order more supplies
-        mBtnItemOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setData(Uri.parse("mailto:"));
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_EMAIL  , new String[] {mSupplierEmail});
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Supply Order");
-                intent.putExtra(Intent.EXTRA_TEXT   , "Message Body");
-                startActivity(intent);
-            }
-        });
-
         //button Item Add to Sale
         mBtnItemAddSale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if (mSelectedUri != null) {
+                    String item_quantity = mTextItemQuantity.getText().toString().trim();
+                    if (!TextUtils.isEmpty(item_quantity)) {
+                        mQuantity = Integer.parseInt(item_quantity);
 
-                    if (mQuantity > 0) {
-                        mQuantity--;
-                        mSold++;
+                        if (mQuantity > 0) {
+                            mQuantity--;
+                            mSold++;
 
-                        mItemQuantity.setText(String.valueOf(mQuantity));
-                        mItemSold.setText(String.valueOf(mSold));
+                            mTextItemQuantity.setText(String.valueOf(mQuantity));
+                            mTextItemSold.setText(String.valueOf(mSold));
+                        }
                     }
+                    Log.e("DETAIL","String item_quantity is empty " + item_quantity);
                 }
             }
         });
@@ -201,45 +195,44 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             public void onClick(View v) {
 
                 if (mSelectedUri != null) {
-                    mQuantity++;
-                    mItemQuantity.setText(String.valueOf(mQuantity));
+                    String item_quantity = mTextItemQuantity.getText().toString().trim();
+                    if (!TextUtils.isEmpty(item_quantity)) {
+                        mQuantity = Integer.parseInt(item_quantity);
+
+                        if (mQuantity >= 0) {
+                            mQuantity++;
+
+                            mTextItemQuantity.setText(String.valueOf(mQuantity));
+                            mTextItemSold.setText(String.valueOf(mSold));
+                        }
+                    }
+                    Log.e("DETAIL","String item_quantity is empty " + item_quantity);
                 }
             }
         });
 
-        //add textWatcher for price edittext input format
-        mEditItemPrice.addTextChangedListener(new TextWatcher() {
+        //button Item Order more supplies
+        mBtnItemOrder.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void onClick(View view) {
+                //used to view price in currency format
+                NumberFormat formatter = NumberFormat.getCurrencyInstance();
 
-            }
+                String message = "Item Name: " + mName + "\n" +
+                        "Item Price: " + formatter.format(mPrice) + "\n" +
+                        "Item Quantity: " + mQuantity + "\n" +
+                        "Item Amount Sold: " + mSold + "\n" +
+                        "Item Picture URI: " + mSelectedImageUri + "\n" +
+                        "Item Supplier: " + mSupplier + "\n" +
+                        "Item Supplier email: " + mSupplierEmail;
 
-            @Override
-            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (!s.toString().equals(current)) {
-                    mEditItemPrice.removeTextChangedListener(this);
-
-                    String cleanString = s.toString().replaceAll("[$,.]", "");
-
-                    double parsed;
-                    if (cleanString == "" || cleanString == null) {
-                        parsed = 0;
-                    } else {
-                        parsed = Double.parseDouble(cleanString);
-                    }
-
-                    String formatted = NumberFormat.getCurrencyInstance().format((parsed / 100));
-
-                    current = formatted;
-                    mEditItemPrice.setText(formatted);
-                    mEditItemPrice.setSelection(formatted.length());
-
-                    mEditItemPrice.addTextChangedListener(this);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setData(Uri.parse("mailto:"));
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{mSupplierEmail});
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Supply Order");
+                intent.putExtra(Intent.EXTRA_TEXT, message);
+                startActivity(intent);
             }
         });
     }
@@ -383,62 +376,138 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     public void saveItem() {
         //get values from views
         String item_name = mEditItemName.getText().toString().trim();
-        String item_quantity = mItemQuantity.getText().toString().trim();
-        String item_sold = mItemSold.getText().toString().trim();
+        //depending if adding new or updating
+        //item quality will get text from either edittext (new) or textview (updating)
+        String item_quantity;
+        if (mSelectedUri == null) {
+            //New item
+            item_quantity = mEditItemQuantity.getText().toString().trim();
+        } else {
+            //Updating item
+            item_quantity = mTextItemQuantity.getText().toString().trim();
+        }
+        String item_sold = mTextItemSold.getText().toString().trim();
         String item_price = mEditItemPrice.getText().toString().trim();
         String item_supplier = mEditItemSupplier.getText().toString().trim();
         String item_supplier_email = mEditSupplierEmail.getText().toString().trim();
 
+
         if (mSelectedUri == null &&
-                TextUtils.isEmpty(item_name) && TextUtils.isEmpty(item_quantity) &&
-                TextUtils.isEmpty(item_sold) && TextUtils.isEmpty(item_price) &&
-                TextUtils.isEmpty(item_supplier) && TextUtils.isEmpty(item_supplier_email) &&
-                mItemImageView.getDrawable() == null) {
+                TextUtils.isEmpty(item_name) &&
+                TextUtils.isEmpty(item_quantity) &&
+                TextUtils.isEmpty(item_price) &&
+                TextUtils.isEmpty(item_supplier) &&
+                TextUtils.isEmpty(item_supplier_email) &&
+                mSelectedImageUri == null) {
+
+            Toast.makeText(this, "Inputs are empty no changes made", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        //if user doesn't add image when creating new Item
-        //replace with error icon
-        if (mSelectedImageUri == null) {
-            mSelectedImageUri = Uri.parse("android.resource://" + ItemContract.CONTENT_AUTHORITY +
-                    "/" + R.drawable.ic_no_image);
-        }
-
-        //If quantity not provided, dont try to parse string into int. Use 0 default
-        int quantity = 0;
-        if (!TextUtils.isEmpty(item_quantity)) {
-            quantity = Integer.parseInt(item_quantity);
-        }
-
-        //remove $ sign from price
-        String remove_sign_price = item_price.replace("$", "");
-
         ContentValues values = new ContentValues();
-        values.put(ItemEntry.COLUMN_ITEM_NAME, item_name);
-        //convert String to Double then Int * 100 for insert into DB
-        values.put(ItemEntry.COLUMN_ITEM_PRICE, StringToDouble(remove_sign_price));
-        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, quantity);
-        values.put(ItemEntry.COLUMN_ITEM_SOLD,item_sold);
-        values.put(ItemEntry.COLUMN_ITEM_PICTURE, mSelectedImageUri.toString());
-        values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, item_supplier);
-        values.put(ItemEntry.COLUMN_ITEM_SUPPLIER_EMAIL, item_supplier_email);
 
-        //if mSelectedUri is not null
-        //insert NEW item
-        //else
-        //update item
-        if (mSelectedUri == null) {
-            getContentResolver().insert(ItemEntry.CONTENT_URI, values);
-            Toast.makeText(this, "successfully inserted into database", Toast.LENGTH_SHORT).show();
+
+        //Now check if some are empty
+        //CHECK ITEM NAME
+        if (!TextUtils.isEmpty(item_name)) {
+            values.put(ItemEntry.COLUMN_ITEM_NAME, item_name);
         } else {
-            //Use selection and selectionArgs to get current Item to update
-            String selection = ItemEntry._ID + "=?";
-            String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(mSelectedUri))};
-            getContentResolver().update(mSelectedUri, values, selection, selectionArgs);
-            Toast.makeText(this, "successfully updated into database", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Name was invalid and did not update",
+                    Toast.LENGTH_SHORT).show();
         }
 
+        //CHECK PRICE
+        if (!TextUtils.isEmpty(item_price)) {
+            double price = Double.parseDouble(item_price);
+            values.put(ItemEntry.COLUMN_ITEM_PRICE, price);
+        } else {
+            Toast.makeText(this, "Price was invalid and did not update",
+                    Toast.LENGTH_SHORT).show();
+        }
 
+        //CHECK ITEM QUANTITY
+        if (!TextUtils.isEmpty(item_quantity)) {
+            try {
+                int quantity = Integer.parseInt(item_quantity);
+                values.put(ItemEntry.COLUMN_ITEM_QUANTITY, quantity);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Quantity number was invalid and did not update",
+                        Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Quantity number was invalid and did not update",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        //CHECK ITEM SOLD
+        if (mSelectedUri != null) {
+            if (!TextUtils.isEmpty(item_sold)) {
+                try {
+                    int sold = Integer.parseInt(item_sold);
+                    values.put(ItemEntry.COLUMN_ITEM_SOLD, sold);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Sold number was invalid and did not update",
+                            Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Sold number was invalid and did not update",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        //CHECK ITEM IMAGE
+        if (mSelectedImageUri != null) {
+            values.put(ItemEntry.COLUMN_ITEM_PICTURE, mSelectedImageUri.toString());
+        } else {
+            Toast.makeText(this, "Item image was invalid and did not update",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        //CHECK ITEM SUPPLIER
+        if (!TextUtils.isEmpty(item_supplier)) {
+            values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, item_supplier);
+        } else {
+            Toast.makeText(this, "Supplier was invalid and did not update",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        //CHECK ITEM SUPPLIER EMAIL
+        if (!TextUtils.isEmpty(item_supplier_email)) {
+            values.put(ItemEntry.COLUMN_ITEM_SUPPLIER_EMAIL, item_supplier_email);
+        } else {
+            Toast.makeText(this, "Supplier email was invalid and did not update",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        // If/else clause to ensure no fields are left empty before the
+        // information is sent to the provider
+        if (!TextUtils.isEmpty(item_name) && !TextUtils.isEmpty(item_quantity) &&
+                !TextUtils.isEmpty(item_price) && !TextUtils.isEmpty(item_supplier) &&
+                !TextUtils.isEmpty(item_supplier_email) && mSelectedImageUri != null) {
+
+            if (mSelectedUri == null) {
+                Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI,values);
+
+                if (newUri == null) {
+                    Toast.makeText(this, "failed to insert into database",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "successfully inserted into database",
+                            Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                int rowsUpdated = getContentResolver().update(mSelectedUri,values,null,null);
+
+                if (rowsUpdated == 0) {
+                    Toast.makeText(this, "failed to update database",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "successfully updated into database",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        }
     }
 
 
@@ -459,24 +528,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             //store imgUri
             mSelectedImageUri = data.getData();
-            mItemImageView.setImageURI(mSelectedImageUri);
+            Picasso.with(this).load(mSelectedImageUri).resize(100,100).into(mItemImageView);
 
             Log.v("DETAILACTIVITY", "SELECTED IMAGE URI " + mSelectedImageUri);
         }
-    }
-
-
-    //Helper method for price variable
-    //to String to Double then Int * 100 for insert into DB
-    public static Double StringToDouble(String s) {
-        s = s.replaceAll(",", ""); //remove commas
-        double parsed;
-        if (s == null || s == "") {
-            parsed = 0;
-        } else {
-            parsed = Double.parseDouble(s);
-        }
-        return parsed * 100; //return rounded double cast to int
     }
 
     @Override
@@ -508,27 +563,26 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
 
         if (cursor.moveToFirst()) {
-            String name = cursor.getString(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME));
-            double price = cursor.getDouble(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE));
+            mName = cursor.getString(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME));
+            mPrice = cursor.getDouble(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE));
             mQuantity = cursor.getInt(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY));
             mSold = cursor.getInt(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_SOLD));
             String imageUri = cursor.getString(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PICTURE));
-            String supplier = cursor.getString(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_SUPPLIER));
+            mSupplier = cursor.getString(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_SUPPLIER));
             mSupplierEmail = cursor.getString(cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_SUPPLIER_EMAIL));
-            NumberFormat formatter = NumberFormat.getCurrencyInstance();
 
             // Update the views on the screen with the values from the database
-            mEditItemName.setText(name);
-            mEditItemPrice.setText(formatter.format(price / 100));
-            mItemQuantity.setText(String.valueOf(mQuantity));
+            mEditItemName.setText(mName);
+            mEditItemPrice.setText(String.format("%.2f", mPrice));
             mEditItemQuantity.setText(String.valueOf(mQuantity));
-            mItemSold.setText(String.valueOf(mSold));
+            mTextItemQuantity.setText(String.valueOf(mQuantity));
+            mTextItemSold.setText(String.valueOf(mSold));
 
             //setting imageUri to imageView
             mSelectedImageUri = Uri.parse(imageUri);
             Log.v("DETAILACTIVITY ", "URI IMAGE SET" + mSelectedImageUri);
             Picasso.with(this).load(mSelectedImageUri).resize(100, 100).into(mItemImageView);
-            mEditItemSupplier.setText(supplier);
+            mEditItemSupplier.setText(mSupplier);
             mEditSupplierEmail.setText(mSupplierEmail);
         }
     }
@@ -539,8 +593,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mEditItemName.setText("");
         mEditItemPrice.setText("");
         mEditItemQuantity.setText("");
-        mItemQuantity.setText("");
-        mItemSold.setText("");
+        mTextItemQuantity.setText("");
+        mTextItemSold.setText("");
         mItemImageView.setImageResource(0);
         mEditItemSupplier.setText("");
         mEditSupplierEmail.setText("");

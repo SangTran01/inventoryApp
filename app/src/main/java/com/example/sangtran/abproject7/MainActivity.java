@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             values.put(ItemEntry.COLUMN_ITEM_NAME, "Item Name");
 
             //convert String to Double then Int * 100 for insert into DB
-            values.put(ItemEntry.COLUMN_ITEM_PRICE, StringToDouble("199.25"));
+            values.put(ItemEntry.COLUMN_ITEM_PRICE, 199.25);
             values.put(ItemEntry.COLUMN_ITEM_QUANTITY, 10);
             values.put(ItemEntry.COLUMN_ITEM_SOLD, 0);
             values.put(ItemEntry.COLUMN_ITEM_PICTURE, selectedImageUri.toString());
@@ -125,12 +125,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    //Helper method to String to Double then Int * 100 for insert into DB
-    public static Double StringToDouble(String s) {
-        s = s.replaceAll(",", ""); //remove commas
-        Double num = Double.parseDouble(s);
-        return num * 100; //return rounded double cast to int
-    }
+//    //Helper method to String to Double then Int * 100 for insert into DB
+//    public static Double StringToDouble(String s) {
+//        s = s.replaceAll(",", ""); //remove commas
+//        Double num = Double.parseDouble(s);
+//        return num * 100; //return rounded double cast to int
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

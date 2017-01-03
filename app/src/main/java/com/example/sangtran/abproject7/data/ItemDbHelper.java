@@ -17,9 +17,9 @@ public class ItemDbHelper extends SQLiteOpenHelper {
                     " (" +
                     ItemEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     ItemEntry.COLUMN_ITEM_NAME + " TEXT NOT NULL," +
-                    ItemEntry.COLUMN_ITEM_PRICE + " INTEGER NOT NULL DEFAULT 0," +
-                    ItemEntry.COLUMN_ITEM_QUANTITY + " INTEGER NOT NULL DEFAULT 0," +
-                    ItemEntry.COLUMN_ITEM_SOLD + " INTEGER NOT NULL DEFAULT 0," +
+                    ItemEntry.COLUMN_ITEM_PRICE + " DOUBLE NOT NULL," +
+                    ItemEntry.COLUMN_ITEM_QUANTITY + " INTEGER NOT NULL," +
+                    ItemEntry.COLUMN_ITEM_SOLD + " INTEGER DEFAULT 0," +
                     ItemEntry.COLUMN_ITEM_PICTURE + " TEXT NOT NULL," +
                     ItemEntry.COLUMN_ITEM_SUPPLIER + " TEXT NOT NULL," +
                     ItemEntry.COLUMN_ITEM_SUPPLIER_EMAIL + " TEXT NOT NULL" +
